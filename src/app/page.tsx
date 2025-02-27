@@ -5,14 +5,29 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import SelectToken from "@/components/atoms/SelectToken";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/navigation";
+
+interface Token {
+  name: string;
+  symbol: string;
+  icon: string;
+  amount: string;
+  value: string;
+}
 
 export default function Home() {
+
+  const router = useRouter();
   const isMain = true;
   const className = '';
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
 
-  const tokens = [
+  const isConnected = useAccount();
+
+  const tokens: Token[] = [
     {
       name: 'Ethereum',
       symbol: 'ETH',
@@ -184,6 +199,17 @@ export default function Home() {
   ];
 
 
+  const handleProceed = async () => {
+    try {
+      // Generate a unique transaction ID
+      const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      router.push(`/approve/${txId}`);
+    } catch (error) {
+      console.error('Error initiating swap:', error);
+    }
+  };
+
+
   return (
     <section
       className={`flex-1 p-6 h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
@@ -213,7 +239,7 @@ export default function Home() {
           >
             <span className="text-sm text-black text-opacity-30">Select Token</span>
             <span className="px-2 py-2.5 text-sm text-black bg-sky-100 rounded-3xl border border-cyan-50 border-solid">
-              --
+              {selectedToken?.symbol || 'Select Token'}
             </span>
           </button>
 
@@ -221,6 +247,8 @@ export default function Home() {
             isPopupOpen={isPopupOpen}
             setIsPopupOpen={setIsPopupOpen}
             tokens={tokens}
+            selectedToken={selectedToken}
+            setSelectedToken={setSelectedToken}
           />
 
         </div>
@@ -241,9 +269,17 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="flex w-full justify-center">
-          <CustomConnect />
-        </div>
+        {selectedToken &&
+          <div className="flex w-full justify-center">
+            <button onClick={handleProceed} type="button"
+              className={`connect_btn cursor-pointer px-6 py-3 font-medium text-[16px] w-[338px]`}
+            >
+              <span className="connect_btn_text">
+                Proceed
+              </span>
+            </button>
+          </div>
+        }
       </main>
     </section>
   );

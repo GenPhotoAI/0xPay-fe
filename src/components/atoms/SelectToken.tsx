@@ -5,11 +5,15 @@ import React, { useEffect, useRef, useState } from 'react'
 const SelectToken = ({
     isPopupOpen,
     setIsPopupOpen,
+    selectedToken,
+    setSelectedToken,
     tokens
 }: {
     isPopupOpen: boolean;
     setIsPopupOpen: (isPopupOpen: boolean) => void;
     tokens: any[];
+    selectedToken: any;
+    setSelectedToken: (selectedToken: any) => void;
 }) => {
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -71,7 +75,7 @@ const SelectToken = ({
                                             key={index}
                                             className="flex items-center justify-between px-2 py-4 border-b border-solid border-[#1515151A] hover:bg-gray-50 cursor-pointer transition-colors"
                                             onClick={() => {
-                                                // Handle token selection here
+                                                setSelectedToken(token);
                                                 setIsPopupOpen(false);
                                             }}
                                         >
