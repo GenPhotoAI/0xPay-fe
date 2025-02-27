@@ -22,3 +22,59 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.connect_btn {
+  border-radius: 36px;
+  border: 1px solid rgba(232, 251, 255, 0.30);
+  background: linear-gradient(180deg, #48CAE4 0%, #6FE7FF 100%);
+  box-shadow: 0px 2px 5.2px 0px #6CE5FD;
+}
+
+.connect_btn_text {
+  background: linear-gradient(180deg, #EFFDFF 0%, #FFF 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.popup-backBg {
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(5.550000190734863px);
+}
+
+.selectTokenPopup {
+  border-radius: 30px;
+  border: var(--border-size, 0.8px) solid var(--border, #E7EAEB);
+  background: #FFF;
+  box-shadow: 0px 2px 18.9px 0px rgba(0, 0, 0, 0.10);
+}
+
+.searchTokenInput {
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  background: #FFF;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #023047 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #023047;
+  border-radius: 2px;
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #023047 transparent;
+}
