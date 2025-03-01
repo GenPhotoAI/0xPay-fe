@@ -31,6 +31,8 @@ const SelectToken = ({
         checkScroll();
     }, [tokens]);
 
+
+    // add search tokens 
     return (
 
         <AnimatePresence>
@@ -81,10 +83,9 @@ const SelectToken = ({
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 relative">
-                                                    <Image
-                                                        src={token.icon}
+                                                    <img
+                                                        src={token.logoURI}
                                                         alt={token.name}
-                                                        fill
                                                         className="rounded-full"
                                                     />
                                                 </div>
@@ -93,10 +94,10 @@ const SelectToken = ({
                                                     <p className="text-sm text-gray-500">{token.symbol}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
+                                            {/* <div className="text-right">
                                                 <p className="font-medium text-gray-900">{token.amount}</p>
                                                 <p className="text-sm text-gray-500">{token.value}</p>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     ))
                                 }

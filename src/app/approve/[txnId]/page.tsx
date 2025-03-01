@@ -23,7 +23,7 @@ const page = () => {
         >
             <header className={`flex justify-between items-center mb-10 `}>
                 <h1 className="text-2xl tracking-tighter text-sky-950">0xPay.</h1>
-                <CustomConnect />
+                {/* <CustomConnect /> */}
             </header>
             <main className={`mx-auto flex flex-col my-0 max-w-[602px] max-sm:px-4 max-sm:py-0 `}>
                 <div className="flex flex-col gap-[25px]">

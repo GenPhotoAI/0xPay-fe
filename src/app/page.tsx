@@ -7,7 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SelectToken from "@/components/atoms/SelectToken";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
-import { getTokenAddress } from "@/utils/helper";
+import { createPayment, getTokenAddress } from "@/utils/helper";
+
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { allTokens } from "@/utils/tokenLists";
 
 interface Token {
   name: string;
@@ -26,184 +29,22 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
 
-  const isConnected = useAccount();
-
-  const tokens: Token[] = [
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    },
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    },
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    },
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    },
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    },
-    {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      icon: '/icons/eth.svg',
-      amount: '0.45',
-      value: '$1,023.45'
-    },
-    {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      icon: '/icons/usdc.svg',
-      amount: '1,234.56',
-      value: '$1,234.56'
-    },
-    {
-      name: 'Tether',
-      symbol: 'USDT',
-      icon: '/icons/usdt.svg',
-      amount: '2,500.00',
-      value: '$2,500.00'
-    },
-    {
-      name: 'Bitcoin',
-      symbol: 'WBTC',
-      icon: '/icons/wbtc.svg',
-      amount: '0.065',
-      value: '$2,845.23'
-    }
-  ];
-
+  const tokens = allTokens;
 
   const handleProceed = async () => {
+
+    const symbol = selectedToken?.symbol || '';
+
     try {
-      getAddress("USDC");
-      // Generate a unique transaction ID
+
+      const tokenDetails = await getTokenAddress(symbol);
+      const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');
+
+      if (!response.ok) {
+        throw new Error('Payment creation failed');
+      }
+
+
       const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       router.push(`/approve/${txId}`);
     } catch (error) {
@@ -211,21 +52,14 @@ export default function Home() {
     }
   };
 
-  const getAddress = async (symbol: string) => {
-    const tokenAddress = await getTokenAddress(symbol);
-    console.log("tokenAddress", tokenAddress); // get decimals : 6
-  }
-
   return (
     <section
       className={`flex-1 md:p-6 px-3 py-6  h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
     >
       <header className={`flex justify-between items-center mb-10 `}>
         <h1 className="text-2xl tracking-tighter text-sky-950">0xPay.</h1>
-
-        <CustomConnect />
-
-
+        {/* <CustomConnect /> */}
+        <WalletMultiButton style={{}} />
       </header>
       <main
         className={`mx-auto my-0 max-w-[602px] max-sm:px-4 max-sm:py-0 `}

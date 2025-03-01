@@ -23,3 +23,30 @@ export const getTokenAddress = async (symbol: string) => {
         return null;
     }
 }
+
+export const createPayment = async (tokenSymbol: string, tokenAddress: string, decimals: number, amount: string) => {
+    try {
+        const response = await fetch(`${BACKEND_URL}/payment/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tokenSymbol,
+                tokenAddress,
+                decimals,
+                amount
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Payment creation failed');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error creating payment:', error);
+        return null;
+    }
+}
+
