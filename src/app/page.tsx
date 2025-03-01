@@ -1,18 +1,16 @@
 'use client'
-import CustomConnect from "@/components/atoms/CustomConnect";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import SelectToken from "@/components/atoms/SelectToken";
 import { useRouter } from "next/navigation";
-import {  getQuote, getTokenAddress } from "@/utils/helper";
+import { getQuote, getTokenAddress } from "@/utils/helper";
+import { getAssociatedTokenAddress, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { allTokens } from "@/utils/tokenLists";
 import { EXCHANGE_FEE, GATEWAY_FEE } from "@/utils/constants";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { VersionedTransaction } from "@solana/web3.js";
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 
 interface Token {
   name: string;
@@ -28,7 +26,7 @@ export default function Home() {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
-  const {publicKey, wallet, signTransaction} = useWallet();
+  const { publicKey, wallet, signTransaction } = useWallet();
 
   const tokens = allTokens;
 
@@ -40,7 +38,21 @@ export default function Home() {
       // const merchantTokenAddress = merchant?.tokenAddress;// get it form the data of the requestId
       // const merchantTokenDecimals = merchant?.tokenAmount; // get it form the data of the requestId
       const merchantTokenAddress = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-      const merchantTokenAmount = "100000"
+      const merchantAddress= "5MNEQfHb5MxJhvJv41FD1YSrVTVh1HiWYZWzNhpR4j1"
+      const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=f6afcd4f-5aa6-4a78-9d1a-d64d6720352f");
+      const merchantTokenAmount = "10000"
+      const USDC_MINT = new PublicKey(merchantTokenAddress); // Yget from the data of the requestId
+      const merchantAccount = new PublicKey(merchantAddress); // get from the data of the requestId - enter the address
+
+      const merchantUSDCTokenAccount = await getAssociatedTokenAddress(
+        USDC_MINT,
+        merchantAccount,
+        true,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+
+      console.log("merchantUSDCTokenAccount:", merchantUSDCTokenAccount.toBase58());
 
 
       const tokenDetails = await getTokenAddress("SOL");
@@ -50,34 +62,39 @@ export default function Home() {
 
       const swapResponse = await (
         await fetch('https://api.jup.ag/swap/v1/swap', {
-            method: 'POST',
-            headers: {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json',
             // 'x-api-key': '' // enter api key here
-            },
-            body: JSON.stringify({
+          },
+          body: JSON.stringify({
             quoteResponse,
             userPublicKey: publicKey?.toString(),
-            })
+            destinationTokenAccount: merchantUSDCTokenAccount.toBase58(),
+
+          })
         })
-        ).json();
+      ).json();
 
-        console.log(swapResponse, "swapResponse")
+      console.log(swapResponse, "swapResponse")
 
-        const transactionBase64 = swapResponse.swapTransaction
-        const transaction = VersionedTransaction.deserialize(Buffer.from(transactionBase64, 'base64'));
-        console.log(transaction);
-        
-        if (!signTransaction) {
-          throw new Error('Wallet not connected');
-        }
-        
-        const signedTransaction = await signTransaction(transaction);
-        console.log(signedTransaction);
-        
-        const transactionBinary = transaction.serialize();
-        console.log(transactionBinary);
+      const transactionBase64 = swapResponse.swapTransaction
+      const transaction = VersionedTransaction.deserialize(Buffer.from(transactionBase64, 'base64'));
+
+      if (!signTransaction) throw new Error('Wallet does not support transaction signing');
+      const signedTransaction = await signTransaction(transaction);
+
+      const transactionBinary = signedTransaction.serialize();
+
+      console.log(signedTransaction, "signedTransaction", transactionBinary)
+
+      const signature = await connection.sendRawTransaction(transactionBinary, {
+        maxRetries: 10,
+        preflightCommitment: "finalized",
+    });
       
+    const confirmation = await connection.confirmTransaction( signature , "finalized");
+    console.log(confirmation, "confirmation")
       // const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');// take this amount from 
 
       // console.log(response, "response", tokenDetails);
@@ -168,7 +185,7 @@ export default function Home() {
           </h3>
           <hr className="mb-3 h-0.5 bg-neutral-900 bg-opacity-10" />
 
-{/* 
+          {/* 
           <div className={`flex justify-between mb-1`}>
             <p className="text-sm font-medium text-slate-900">{'Exchange Fees'}</p>
             <p className="text-sm text-slate-900">{`${EXCHANGE_FEE * 100}%`}</p>

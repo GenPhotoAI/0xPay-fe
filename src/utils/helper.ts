@@ -35,7 +35,7 @@ export const getTokenAddress = async (symbol: string) => {
 // }
 
 export const getQuote = async (inputMint: string, outputMint: string, amount: string) => {
-    const quote = await fetch(`https://api.jup.ag/swap/v1/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50&restrictIntermediateTokens=true`)
+    const quote = await fetch(`https://api.jup.ag/swap/v1/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50&restrictIntermediateTokens=true&swapMode=ExactOut`)
     const data = await quote.json();
     return data;
 }
