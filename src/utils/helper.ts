@@ -40,9 +40,21 @@ export const getQuote = async (inputMint: string, outputMint: string, amount: st
     return data;
 }
 
-export const getSwap = async (inputMint: string, outputMint: string, amount: string) => {
-    const swap = await fetch(`https://api.jup.ag/swap/v1/swap?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50&restrictIntermediateTokens=true`)
-    const data = await swap.json();
-    console.log(data);
-    return data;
+export const getMerchant = async (stripeId: string, token: string) => {
+    try {
+        const response = await fetch(`${BACKEND_URL}/merchant/${stripeId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching merchant:', error);
+        return null;
+    }
 }
+
+

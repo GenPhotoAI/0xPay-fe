@@ -6,7 +6,7 @@
 }
 
 :root {
-  --background: #ffffff;
+  --background: #CAF0F8;
   --foreground: #171717;
 }
 
@@ -15,6 +15,11 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+:root {
+  --font-dm-sans: var(--font-dm-sans);
+  --font-dm-mono: var(--font-dm-mono);
 }
 
 body {
@@ -49,6 +54,12 @@ body {
   box-shadow: 0px 2px 18.9px 0px rgba(0, 0, 0, 0.10);
 }
 
+.createCollectionPopup {
+  border-radius: 24px;
+    border: 1px solid rgba(3, 212, 255, 0.12);
+    background: #E8FBFF;
+}
+
 .searchTokenInput {
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.20);
@@ -81,6 +92,13 @@ body {
 
 .connected_wallet_btn {
   border-radius: 36px;
-    border: 1px solid rgba(205, 205, 205, 0.30);
-    background: rgba(235, 235, 235, 0.76);
+  border: 1px solid rgba(205, 205, 205, 0.30);
+  background: rgba(235, 235, 235, 0.76);
+}
+
+.create-collection-btn{
+  border-radius: 24px;
+    border: 1px solid rgba(3, 212, 255, 0.12);
+    background: #E8FBFF;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
 }
