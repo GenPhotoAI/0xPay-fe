@@ -9,13 +9,13 @@ const allTokens = [
         symbol: "USDC",
         address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
     },
-    
+
 ]
 
 export const getTokenAddress = async (symbol: string) => {
     const tokenAddress = allTokens.find((token) => token.symbol === symbol)?.address;
     try {
-        const tokens = await fetch(`${BACKEND_URL}/tokens/v1/token/${tokenAddress}`)    
+        const tokens = await fetch(`${BACKEND_URL}/tokens/v1/token/${tokenAddress}`)
         const data = await tokens.json();
         return data;
     } catch (error) {
@@ -49,4 +49,22 @@ export const createPayment = async (tokenSymbol: string, tokenAddress: string, d
         return null;
     }
 }
+
+export const getMerchant = async (stripeId: string, token: string) => {
+    try {
+        const response = await fetch(`${BACKEND_URL}/merchant/${stripeId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching merchant:', error);
+        return null;
+    }
+}
+
 
