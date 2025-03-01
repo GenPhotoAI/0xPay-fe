@@ -15,9 +15,7 @@ import { allTokens } from "@/utils/tokenLists";
 interface Token {
   name: string;
   symbol: string;
-  icon: string;
-  amount: string;
-  value: string;
+  logoURI: string;
 }
 
 export default function Home() {
@@ -73,13 +71,41 @@ export default function Home() {
           <h3 className="mb-3 text-base font-medium text-slate-900">Pay With:</h3>
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="flex justify-between items-center px-3 py-2 w-full h-14 bg-white border-gray-200 border-solid border-[0.8px] rounded-[30px] max-sm:gap-2 max-sm:h-auto"
+            className="flex justify-between items-center pl-[25px] pr-[5px] py-2 w-full h-14 bg-white border-gray-200 border-solid border-[0.8px] rounded-[30px] max-sm:gap-2 max-sm:h-auto"
             aria-haspopup="listbox"
             aria-expanded="false"
           >
             <span className="text-sm text-black text-opacity-30">Select Token</span>
-            <span className="px-2 py-2.5 text-sm text-black bg-sky-100 rounded-3xl border border-cyan-50 border-solid">
+
+            <span className="px-2 py-2.5 text-sm flex gap-1 items-center cursor-pointer text-black bg-sky-100 rounded-[25px] border border-cyan-50 border-solid">
+              {selectedToken?.logoURI && (
+                <img
+                  src={selectedToken.logoURI}
+                  alt={selectedToken.name}
+                  width={24}
+                  height={24}
+                  className="rounded-full"
+                />
+              )}
               {selectedToken?.symbol || 'Select Token'}
+              <motion.svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                animate={{ rotate: isPopupOpen ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-gray-400"
+              >
+                <path
+                  d="M6 9L12 15L18 9"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </motion.svg>
             </span>
           </button>
 

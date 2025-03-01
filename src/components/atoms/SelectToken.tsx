@@ -19,6 +19,8 @@ const SelectToken = ({
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showFade, setShowFade] = useState(true);
 
+    const [searchTerm, setSearchTerm] = useState('');
+
     const checkScroll = () => {
         const container = scrollContainerRef.current;
         if (container) {
@@ -32,7 +34,11 @@ const SelectToken = ({
     }, [tokens]);
 
 
-    // add search tokens 
+    const filteredTokens = tokens.filter(token =>
+        token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
 
         <AnimatePresence>
@@ -45,6 +51,7 @@ const SelectToken = ({
                     onClick={() => setIsPopupOpen(false)}
                 >
                     <motion.div
+                        onClick={(e) => e.stopPropagation()}
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{
                             scale: 1,
@@ -64,7 +71,14 @@ const SelectToken = ({
                         }}
                         className="p-6 w-[90%] max-w-[500px] max-h-[75vh] relative selectTokenPopup"
                     >
-                        <input type="text" className="searchTokenInput h-[60px] focus:outline-none w-full px-3 py-2" placeholder="Search Token" />
+                        <input
+                            type="text"
+                            autoFocus
+                            className="searchTokenInput h-[60px] focus:outline-none w-full px-3 py-2"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search Token" />
+
                         <div className="relative">
                             <div
                                 ref={scrollContainerRef}
@@ -72,7 +86,7 @@ const SelectToken = ({
                                 className="overflow-y-auto max-h-[50vh] custom-scrollbar mt-[10px]"
                             >
                                 {
-                                    tokens.map((token, index) => (
+                                    filteredTokens.map((token, index) => (
                                         <div
                                             key={index}
                                             className="flex items-center justify-between px-2 py-4 border-b border-solid border-[#1515151A] hover:bg-gray-50 cursor-pointer transition-colors"
