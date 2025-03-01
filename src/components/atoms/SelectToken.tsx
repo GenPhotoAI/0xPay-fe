@@ -104,8 +104,8 @@ const SelectToken = ({
                                                     />
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-gray-900">{token.name}</p>
-                                                    <p className="text-sm text-gray-500">{token.symbol}</p>
+                                                    <p className="font-medium text-gray-900">{token.symbol}</p>
+                                                    <p className="text-sm text-gray-500">{token.name}</p>
                                                 </div>
                                             </div>
                                             {/* <div className="text-right">

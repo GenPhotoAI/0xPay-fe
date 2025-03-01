@@ -11,6 +11,7 @@ import { createPayment, getTokenAddress } from "@/utils/helper";
 
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { allTokens } from "@/utils/tokenLists";
+import { EXCHANGE_FEE, GATEWAY_FEE } from "@/utils/constants";
 
 interface Token {
   name: string;
@@ -127,11 +128,11 @@ export default function Home() {
 
           <div className={`flex justify-between mb-1`}>
             <p className="text-sm font-medium text-slate-900">{'Exchange Fees'}</p>
-            <p className="text-sm text-slate-900">{'$0.8'}</p>
+            <p className="text-sm text-slate-900">{`${EXCHANGE_FEE * 100}%`}</p>
           </div>
           <div className={`flex justify-between mb-1`}>
             <p className="text-sm font-medium text-slate-900">{'Gateway Fees'}</p>
-            <p className="text-sm text-slate-900">{'$1.2'}</p>
+            <p className="text-sm text-slate-900">{`${GATEWAY_FEE * 100}%`}</p>
           </div>
         </section>
 
