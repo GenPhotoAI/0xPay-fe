@@ -2,11 +2,12 @@
 import CustomConnect from "@/components/atoms/CustomConnect";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import SelectToken from "@/components/atoms/SelectToken";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
+import { getTokenAddress } from "@/utils/helper";
 
 interface Token {
   name: string;
@@ -201,6 +202,7 @@ export default function Home() {
 
   const handleProceed = async () => {
     try {
+      getAddress("USDC");
       // Generate a unique transaction ID
       const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       router.push(`/approve/${txId}`);
@@ -209,10 +211,14 @@ export default function Home() {
     }
   };
 
+  const getAddress = async (symbol: string) => {
+    const tokenAddress = await getTokenAddress(symbol);
+    console.log("tokenAddress", tokenAddress); // get decimals : 6
+  }
 
   return (
     <section
-      className={`flex-1 p-6 h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
+      className={`flex-1 md:p-6 px-3 py-6  h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
     >
       <header className={`flex justify-between items-center mb-10 `}>
         <h1 className="text-2xl tracking-tighter text-sky-950">0xPay.</h1>
@@ -233,7 +239,7 @@ export default function Home() {
           <h3 className="mb-3 text-base font-medium text-slate-900">Pay With:</h3>
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="flex justify-between items-center px-3 py-2 w-full h-14 bg-white border-gray-200 border-solid border-[0.8px] rounded-[30px] max-sm:flex-col max-sm:gap-2 max-sm:h-auto"
+            className="flex justify-between items-center px-3 py-2 w-full h-14 bg-white border-gray-200 border-solid border-[0.8px] rounded-[30px] max-sm:gap-2 max-sm:h-auto"
             aria-haspopup="listbox"
             aria-expanded="false"
           >

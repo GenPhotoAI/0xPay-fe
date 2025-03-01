@@ -78,3 +78,9 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #023047 transparent;
 }
+
+.connected_wallet_btn {
+  border-radius: 36px;
+    border: 1px solid rgba(205, 205, 205, 0.30);
+    background: rgba(235, 235, 235, 0.76);
+}

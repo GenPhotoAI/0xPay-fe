@@ -51,12 +51,12 @@ const page = () => {
 
                     </div>
 
-                    <section className="flex justify-between items-center pb-5 mb-6 border-b-2 border-solid border-b-neutral-900 border-b-opacity-10 max-sm:flex-col max-sm:gap-3 max-sm:items-start">
+                    <section className="flex justify-between items-center pb-5 mb-6 max-sm:flex-col max-sm:gap-3 max-sm:items-start">
                         <h2 className="mb-2 text-base font-medium text-sky-950">Amount:</h2>
                         <p className="text-4xl font-medium text-sky-950">$98.00</p>
                     </section>
 
-                    <button className="text-[#0096C7] w-full py-3 bg-[#CAF0F8] bg-opacity-[40%] rounded-[12px] 
+                    <button className="text-[#0096C7] cursor-pointer w-full py-3 bg-[#CAF0F8] bg-opacity-[40%] rounded-[12px] 
                     transition-all duration-200 ease-in-out font-medium text-[16px]
                     hover:bg-opacity-60 hover:shadow-lg hover:shadow-[#CAF0F8]/20
                     active:transform active:scale-[0.98] active:bg-opacity-70
@@ -67,9 +67,9 @@ const page = () => {
                 </div>
 
                 <div className="or-strip flex gap-[3px] my-6 justify-center items-center">
-                    <div className="flex-1 h-[2px] bg-black bg-opacity-20"></div>
-                    <div className="text-[16px] text-black text-opacity-20">Or</div>
-                    <div className="flex-1 h-[2px] bg-black bg-opacity-20"></div>
+                    <div className="flex-1 h-[2px] bg-[#00000033]"></div>
+                    <div className="text-[16px] text-[#00000033]">Or</div>
+                    <div className="flex-1 h-[2px] bg-[#00000033]"></div>
                 </div>
 
                 <div className="">
