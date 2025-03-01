@@ -5,13 +5,14 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import SelectToken from "@/components/atoms/SelectToken";
-import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
-import { createPayment, getTokenAddress } from "@/utils/helper";
+import {  getQuote, getTokenAddress } from "@/utils/helper";
 
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { allTokens } from "@/utils/tokenLists";
 import { EXCHANGE_FEE, GATEWAY_FEE } from "@/utils/constants";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { VersionedTransaction } from "@solana/web3.js";
 
 interface Token {
   name: string;
@@ -27,6 +28,7 @@ export default function Home() {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const {publicKey, wallet, signTransaction} = useWallet();
 
   const tokens = allTokens;
 
@@ -35,17 +37,58 @@ export default function Home() {
     const symbol = selectedToken?.symbol || '';
 
     try {
-
-      const tokenDetails = await getTokenAddress(symbol);
-      const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');
-
-      if (!response.ok) {
-        throw new Error('Payment creation failed');
-      }
+      // const merchantTokenAddress = merchant?.tokenAddress;// get it form the data of the requestId
+      // const merchantTokenDecimals = merchant?.tokenAmount; // get it form the data of the requestId
+      const merchantTokenAddress = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      const merchantTokenAmount = "100000"
 
 
-      const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      router.push(`/approve/${txId}`);
+      const tokenDetails = await getTokenAddress("SOL");
+      const quoteResponse = await getQuote((tokenDetails as any).address as string, merchantTokenAddress, merchantTokenAmount);
+
+      console.log(quoteResponse)
+
+      const swapResponse = await (
+        await fetch('https://api.jup.ag/swap/v1/swap', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            // 'x-api-key': '' // enter api key here
+            },
+            body: JSON.stringify({
+            quoteResponse,
+            userPublicKey: publicKey?.toString(),
+            })
+        })
+        ).json();
+
+        console.log(swapResponse, "swapResponse")
+
+        const transactionBase64 = swapResponse.swapTransaction
+        const transaction = VersionedTransaction.deserialize(Buffer.from(transactionBase64, 'base64'));
+        console.log(transaction);
+        
+        if (!signTransaction) {
+          throw new Error('Wallet not connected');
+        }
+        
+        const signedTransaction = await signTransaction(transaction);
+        console.log(signedTransaction);
+        
+        const transactionBinary = transaction.serialize();
+        console.log(transactionBinary);
+      
+      // const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');// take this amount from 
+
+      // console.log(response, "response", tokenDetails);
+
+      // if (!response.ok) {
+      //   throw new Error('Payment creation failed');
+      // }
+
+
+      // const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // router.push(`/approve/${txId}`);
     } catch (error) {
       console.error('Error initiating swap:', error);
     }
@@ -125,11 +168,11 @@ export default function Home() {
           </h3>
           <hr className="mb-3 h-0.5 bg-neutral-900 bg-opacity-10" />
 
-
+{/* 
           <div className={`flex justify-between mb-1`}>
             <p className="text-sm font-medium text-slate-900">{'Exchange Fees'}</p>
             <p className="text-sm text-slate-900">{`${EXCHANGE_FEE * 100}%`}</p>
-          </div>
+          </div> */}
           <div className={`flex justify-between mb-1`}>
             <p className="text-sm font-medium text-slate-900">{'Gateway Fees'}</p>
             <p className="text-sm text-slate-900">{`${GATEWAY_FEE * 100}%`}</p>

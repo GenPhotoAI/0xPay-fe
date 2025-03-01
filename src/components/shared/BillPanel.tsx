@@ -1,3 +1,4 @@
+import { GATEWAY_FEE } from "@/utils/constants";
 import React from "react";
 
 export default function BillPanel() {
@@ -43,7 +44,7 @@ export default function BillPanel() {
                     </div>
                     <div className={`flex justify-between mb-2 ${className}`}>
                         <p className="text-sm text-sky-950">{'Gateway Fees'}</p>
-                        <p className="text-sm text-sky-950">{'$2.00'}</p>
+                        <p className="text-sm text-sky-950">{`${GATEWAY_FEE * 100}%`}</p>
                     </div>
                     <hr
                         className={`mx-0 my-2 h-px bg-[#1515151A] ${className}`}
