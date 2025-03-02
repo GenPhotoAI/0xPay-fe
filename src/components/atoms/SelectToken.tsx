@@ -74,7 +74,7 @@ const SelectToken = ({
                         <input
                             type="text"
                             autoFocus
-                            className="searchTokenInput h-[60px] focus:outline-none w-full px-3 py-2"
+                            className="searchTokenInput h-[60px] focus:outline-none w-full px-3 py-2 text-black"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search Token" />
@@ -104,8 +104,8 @@ const SelectToken = ({
                                                     />
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-gray-900">{token.name}</p>
-                                                    <p className="text-sm text-gray-500">{token.symbol}</p>
+                                                    <p className="font-medium text-gray-900">{token.symbol}</p>
+                                                    <p className="text-sm text-gray-500">{token.name}</p>
                                                 </div>
                                             </div>
                                             {/* <div className="text-right">

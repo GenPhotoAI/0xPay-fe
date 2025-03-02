@@ -2,13 +2,12 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
+import AppWalletProvider from '@/providers/AppWalletProvider';
 
 import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
-
-import AppWalletProvider from "@/providers/AppWalletProvider";
 
 
 const dmSans = DM_Sans({
@@ -25,17 +24,15 @@ const dmMono = DM_Mono({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-
-
+}) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
-      <body
-        className={`antialiased`}
-      >
-        {children}
+    <html lang="en">
+      <body>
+        <AppWalletProvider>
+          {children}
+        </AppWalletProvider>
       </body>
     </html>
   );
