@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
     return (
         <ClerkProvider>
-            <div className="w-full min-h-screen bg-[#CAF0F8]">
+            <div className="w-full min-h-screen bg-[#CAF0F8] text-black">
                 {children}
             </div>
         </ClerkProvider>
