@@ -42,7 +42,7 @@ export const getQuote = async (inputMint: string, outputMint: string, amount: st
 
 export const getMerchant = async (stripeId: string, token: string) => {
     try {
-        const response = await fetch(`${BACKEND_URL}/merchant/details/${stripeId}`, {
+        const response = await fetch(`/api/merchant?stripeId=${stripeId}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
