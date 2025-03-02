@@ -212,7 +212,7 @@ const page = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {paymentsSoFar.map((payment) => (
+                    {paymentsSoFar?.map((payment) => (
                         <tr key={payment.id} className='py-3 px-4'>
                             <td className='py-3 px-4 border-b border-[#15151526]'>{payment.amount}</td>
                             <td className='py-3 px-4 border-b border-[#15151526]'>{new Date(payment.createdAt).toLocaleDateString('en-GB')}</td>

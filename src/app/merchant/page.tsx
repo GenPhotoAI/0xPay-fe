@@ -72,7 +72,7 @@ const Page = () => {
     const renderContent = () => {
         if (showMerchantForm) {
             return (
-                <form onSubmit={handleFormSubmit} className="flex flex-col gap-3 w-full max-w-[602px]">
+                <form onSubmit={handleFormSubmit} className="flex flex-col gap-3 w-full max-w-[602px] text-black">
                     <div className="flex flex-col gap-3">
                         <span className="text-[16px]">Username</span>
                         <input

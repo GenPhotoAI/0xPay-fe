@@ -41,7 +41,20 @@ export default function BillPanel() {
                 <section className={'mt-6 w-full'}>
                     <div className={`flex justify-between mb-2 ${className}`}>
                         <p className="text-sm text-sky-950">{'Gateway Fees'}</p>
-                        <p className="text-sm text-sky-950">{`$${GATEWAY_FEE}`}</p>
+                        <p className="text-sm text-sky-950">{`${GATEWAY_FEE} ${merchantCurrency}`}</p>
+                    </div>
+                    <div className={`flex justify-between mb-2 ${className}`}>
+                        <p className="text-sm text-sky-950">{'Subtotal'}</p>
+                        <p className="text-sm text-sky-950">{`${paymentData?.amount / 10 ** 6} ${merchantCurrency}`}</p>
+                    </div>
+
+                    <div className="bg-[#1515151A] h-[1px] w-full my-3"></div>
+
+                    <div className={`flex justify-between mb-2 ${className}`}>
+                        <p className="text-sm text-sky-950">{'Total'}</p>
+                        <p className="text-sm text-sky-950">
+                            {`${(paymentData?.amount / 10 ** 6 + GATEWAY_FEE)} ${merchantCurrency}`}
+                        </p>
                     </div>
                 </section>
             </aside>

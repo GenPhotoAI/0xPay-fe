@@ -36,7 +36,7 @@ const CollectionList = ({ collections, setIsCollectionLinksModalOpen, isCollecti
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {collections.map((collection: any) => (
+                                        {collections?.map((collection: any) => (
                                             <tr key={`${collection.id}-${Math.random()}`}>
                                                 <td className="w-1/2 py-4 border-b border-[#15151526]">{`${collection.amount / 10 ** 6} USDC`}</td>
                                                 <td className="w-1/2 py-4 border-b border-[#15151526]">

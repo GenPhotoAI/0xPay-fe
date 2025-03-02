@@ -15,6 +15,7 @@ import Jupiter from '@/assets/Jupiter.svg';
 import Image from 'next/image';
 import Sol from '@/assets/Sol.svg';
 import Success from '@/assets/Success.svg';
+import { QRCodeSVG } from 'qrcode.react';
 
 const page = () => {
 
@@ -324,6 +325,8 @@ const page = () => {
                         onClick={handleProceed}>
                         Approve Transaction From Wallet
                     </button>}
+
+
                 </div>
 
                 {!isLoading && !isSuccess && <div className="or-strip flex gap-[3px] my-6 justify-center items-center">
@@ -337,6 +340,19 @@ const page = () => {
                         Approve Transaction From Wallet
                     </button>
                 </div>}
+
+                {!isLoading && !isSuccess &&
+
+                    <div className="bg-[#0000000D] p-6 w-[260px] mb-12 h-[260px] rounded-[19px] shadow-md flex justify-center items-center left-0 right-0 mx-auto">
+                        <QRCodeSVG
+                            value={`${process.env.NEXT_PUBLIC_APP_URL}/user/${requestId}`}
+                            size={200}
+                            level="H"
+                            includeMargin={true}
+                            bgColor="transparent"
+                        />
+
+                    </div>}
 
                 {isSuccess &&
                     <div className="flex flex-col gap-[38px] items-center justify-center text-center">

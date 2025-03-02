@@ -27,7 +27,7 @@ export default function MerchantLayout({
 
             setPaymentData(data);
 
-            const amt = data.paymentRequest.amount;
+            const amt = data.amount;
             setAmount(amt);
         }
         fetchRequestDetails();
