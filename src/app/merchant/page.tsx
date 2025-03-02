@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation'
 import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
 import googleIcon from '@/assets/googleIcon.svg'
 import Image from 'next/image';
-import { getMerchant } from '@/utils/helper';
+import { createMerchant, getMerchant } from '@/utils/helper';
 const Page = () => {
 
     const { userId, getToken } = useAuth()
 
     const [showMerchantForm, setShowMerchantForm] = useState(false);
+
+    console.log('showMerchantForm', showMerchantForm);
 
     const [formData, setFormData] = useState({
         username: '',
@@ -24,11 +26,11 @@ const Page = () => {
         console.log('token', token);
         if (userId && token) {
             const merchant = await getMerchant(userId, token);
+            console.log('merchanttt', merchant);
             if (merchant.name && merchant.address) {
-                router.replace('/merchant/dashboard');
+                router.push('/merchant/dashboard');
             } else {
-                window.alert('You are not a merchant');
-                router.replace('/merchant/');
+                setShowMerchantForm(true);
             }
         }
     }
@@ -38,40 +40,39 @@ const Page = () => {
             console.log('userId', userId);
             getMerchantDetails();
         }
-    }, [isLoaded, isSignedIn, router]);
+    }, [isLoaded, isSignedIn, router, userId, getMerchantDetails]);
 
 
-    if (isLoaded && isSignedIn) {
-        return null;
-    }
+    // if (isLoaded && isSignedIn) {
+    //     return null;
+    // }
 
-    const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log(formData);
+        const token = await getToken();
+        if (!token || !userId) return;
+
+        const merchant = await getMerchant(userId, token);
+        if (merchant.name && merchant.address) {
+            router.replace('/merchant/dashboard');
+        } else {
+            setShowMerchantForm(true);
+        }
+
+        const createdMerchant = await createMerchant(formData, token, userId);
+
+        if (createdMerchant) {
+            router.replace('/merchant/dashboard');
+        }
+
+        console.log('createdMerchant', createdMerchant);
     };
 
     const renderContent = () => {
         if (showMerchantForm) {
             return (
                 <form onSubmit={handleFormSubmit} className="flex flex-col gap-3 w-full max-w-[602px]">
-                    <SignedIn>
-                        <UserButton />
-                    </SignedIn>
-                    <SignedOut>
-                        <SignInButton mode='modal'>
-                            <button
-                                className="flex relative justify-center items-center px-3 py-2.5 h-12 bg-white border border-gray-200 border-solid cursor-pointer duration-[0.2s] rounded-[100px] transition-[background-color] w-[604px] max-md:w-full max-sm:px-2.5 max-sm:py-2 max-sm:h-11 hover:bg-gray-50"
-                                aria-label="Sign in with Google"
-                            >
-                                <div className="flex items-center mr-3">
-                                    <Image className='w-[18px] h-[18px]' src={googleIcon} alt="google" />
-                                </div>
-                                <span className="text-base font-medium text-zinc-700 max-sm:text-sm">
-                                    Sign in with Google
-                                </span>
-                            </button>
-                        </SignInButton>
-                    </SignedOut>
                     <div className="flex flex-col gap-3">
                         <span className="text-[16px]">Username</span>
                         <input
@@ -101,6 +102,7 @@ const Page = () => {
                         </button>
                         <button
                             type="submit"
+                            onClick={handleFormSubmit}
                             className="border cursor-pointer text-white flex-1 connect_btn w-full py-3  rounded-[36px]"
                         >
                             Submit
@@ -113,13 +115,6 @@ const Page = () => {
 
         return (
             <>
-                <button
-                    className="border cursor-pointer border-[#24D5FB] w-[298px] py-3 text-[#25C5E5] rounded-[36px] mb-4"
-                    onClick={() => setShowMerchantForm(true)}
-                >
-                    Become a Merchant
-                </button>
-
                 <SignedIn>
                     <UserButton />
                 </SignedIn>
@@ -133,7 +128,6 @@ const Page = () => {
             </>
         );
     };
-
 
     return (
         <main className="flex flex-col items-center px-5 py-20 w-full min-h-screen bg-cyan-100">

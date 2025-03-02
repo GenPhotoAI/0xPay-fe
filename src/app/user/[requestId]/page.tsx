@@ -7,9 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { allTokens } from "@/utils/tokenLists";
-import { createPayment, getTokenAddress } from '@/utils/helper';
+import { getTokenAddress } from '@/utils/helper';
 import SelectToken from '@/components/atoms/SelectToken';
-import { BACKEND_URL } from '@/utils/constants';
+import { BACKEND_URL, GATEWAY_FEE } from '@/utils/constants';
+import { usePaymentContext } from '@/providers/PaymentContext';
 
 interface Token {
     name: string;
@@ -20,6 +21,13 @@ interface Token {
 
 const page = () => {
 
+    const { paymentData, amount, setPaymentData } = usePaymentContext();
+
+    if (!setPaymentData) {
+        console.error('setPaymentData is not available in context');
+        return null; // or show an error message
+    }
+
     const router = useRouter();
     const isMain = true;
     const className = '';
@@ -29,7 +37,6 @@ const page = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedToken, setSelectedToken] = useState<Token | null>(null);
 
-    const [amount, setAmount] = useState(0);
 
     const tokens = allTokens;
 
@@ -37,6 +44,9 @@ const page = () => {
 
         const symbol = selectedToken?.symbol || '';
 
+        if (!selectedToken) {
+            throw new Error('Token not selected');
+        }
         try {
 
             // const tokenDetails = await getTokenAddress(symbol);
@@ -45,6 +55,14 @@ const page = () => {
             // if (!response.ok) {
             //     throw new Error('Payment creation failed');
             // }
+            setPaymentData({
+                ...paymentData,
+                userSelectedToken: {
+                    name: selectedToken.name,
+                    symbol: selectedToken.symbol,
+                    logoURI: selectedToken.logoURI
+                }
+            });
 
 
             router.push(`${requestId}/approve`);
@@ -53,22 +71,6 @@ const page = () => {
         }
     };
 
-    useEffect(() => {
-        //fetch request details
-        const fetchRequestDetails = async () => {
-            const response = await fetch(`${BACKEND_URL}/payment/status/${requestId}`);
-            const data = await response.json();
-            console.log(data);
-
-            const amt = data.paymentRequest.amount;
-            setAmount(amt);
-
-            // if (data.status === 'success') {
-            //     router.push(`/approve/${data.txId}`);
-            // }
-        }
-        fetchRequestDetails();
-    }, [requestId]);
 
     return (
         <section
@@ -94,7 +96,7 @@ const page = () => {
             >
                 <section className="flex justify-between items-center pb-5 mb-6 border-b-2 border-solid border-b-neutral-900 border-b-opacity-10 max-sm:flex-col max-sm:gap-3 max-sm:items-start">
                     <h2 className="mb-2 text-base font-medium text-sky-950">Amount:</h2>
-                    <p className="text-4xl font-medium text-sky-950">$98.00</p>
+                    <p className="text-4xl font-medium text-sky-950">{`$${paymentData?.amount / 10 ** 6}`}</p>
                 </section>
 
                 <div className={`mb-8`}>
@@ -153,15 +155,9 @@ const page = () => {
                         Fees Calculation
                     </h3>
                     <hr className="mb-3 h-0.5 bg-neutral-900 bg-opacity-10" />
-
-
-                    <div className={`flex justify-between mb-1`}>
-                        <p className="text-sm font-medium text-slate-900">{'Exchange Fees'}</p>
-                        <p className="text-sm text-slate-900">{'$0.8'}</p>
-                    </div>
                     <div className={`flex justify-between mb-1`}>
                         <p className="text-sm font-medium text-slate-900">{'Gateway Fees'}</p>
-                        <p className="text-sm text-slate-900">{'$1.2'}</p>
+                        <p className="text-sm text-slate-900">{`$${GATEWAY_FEE}`}</p>
                     </div>
                 </section>
 

@@ -1,10 +1,41 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import CustomConnect from '@/components/atoms/CustomConnect';
 import { motion } from 'framer-motion';
+import { usePaymentContext } from '@/providers/PaymentContext';
+import { getQuote, getTokenAddress } from "@/utils/helper";
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { getAssociatedTokenAddress, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { useWallet } from '@solana/wallet-adapter-react';
+
+
 
 const page = () => {
+
+    const router = useRouter();
+    const { paymentData, amount } = usePaymentContext();
+
+    const amountToPay = paymentData.amount;
+
+    const merchantAddress = paymentData?.merchant?.address;
+    const merchantCurrency = paymentData?.merchant?.currency;
+
+    const { requestId } = useParams();
+
+    const userSelectedToken = paymentData?.userSelectedToken;
+
+    if (!userSelectedToken) {
+        router.push(`/user/${requestId}`);
+    }
+
+    const userSelectedTokenName = userSelectedToken?.name;
+    const userSelectedTokenSymbol = userSelectedToken?.symbol;
+    const userSelectedTokenLogoURI = userSelectedToken?.logoURI;
+
+    const { publicKey, wallet, signTransaction } = useWallet();
+
+    console.log(publicKey, "publicKey")
 
     const { txId } = useParams();
 
@@ -17,6 +48,93 @@ const page = () => {
         }
     }
 
+    const handleProceed = async () => {
+
+        if (!merchantCurrency || !userSelectedTokenSymbol) {
+            return;
+        }
+
+        try {
+            // const merchantTokenAddress = merchant?.tokenAddress;// get it form the data of the requestId
+            // const merchantTokenDecimals = merchant?.tokenAmount; // get it form the data of the requestId
+            const merchantTokenDetails = await getTokenAddress(merchantCurrency); // data user  - merchant.currency
+            const merchantTokenAddress = merchantTokenDetails.address;
+            const userTokenDetails = await getTokenAddress(userSelectedTokenSymbol); // user selected symbol
+            const userTokenAddress = userTokenDetails.address;
+            const userTokenDecimals = userTokenDetails.decimals; //inputTokenDecimals to BE
+            const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=f6afcd4f-5aa6-4a78-9d1a-d64d6720352f"); // env me daldo
+            const merchantTokenAmount = amountToPay // data user  - data.amount
+            const USDC_MINT = new PublicKey(merchantTokenAddress); // Yget from the data of the requestId
+            const merchantAccount = new PublicKey(merchantAddress); // get from the data of the requestId - enter the address
+
+            const merchantUSDCTokenAccount = await getAssociatedTokenAddress(
+                USDC_MINT,
+                merchantAccount,
+                true,
+                TOKEN_PROGRAM_ID,
+                ASSOCIATED_TOKEN_PROGRAM_ID
+            );
+
+            console.log("merchantUSDCTokenAccount:", merchantUSDCTokenAccount.toBase58());
+
+
+            const quoteResponse = await getQuote(userTokenAddress, merchantTokenAddress, merchantTokenAmount.toString());
+
+            console.log(quoteResponse)
+
+            const swapResponse = await (
+                await fetch('https://api.jup.ag/swap/v1/swap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'x-api-key': '' // enter api key here
+                    },
+                    body: JSON.stringify({
+                        quoteResponse,
+                        userPublicKey: publicKey?.toString(),
+                        destinationTokenAccount: merchantUSDCTokenAccount.toBase58(),
+
+                    })
+                })
+            ).json();
+
+            console.log(swapResponse, "swapResponse")
+
+            const transactionBase64 = swapResponse.swapTransaction
+            const transaction = VersionedTransaction.deserialize(Buffer.from(transactionBase64, 'base64'));
+
+            if (!signTransaction) throw new Error('Wallet does not support transaction signing');
+            const signedTransaction = await signTransaction(transaction);
+
+            const transactionBinary = signedTransaction.serialize();
+
+            console.log(signedTransaction, "signedTransaction", transactionBinary)
+
+            const signature = await connection.sendRawTransaction(transactionBinary, {
+                maxRetries: 10,
+                preflightCommitment: "finalized",
+            });
+
+            const confirmation = await connection.confirmTransaction(signature, "finalized");
+            console.log(confirmation, "confirmation")
+            // const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');// take this amount from 
+
+            // console.log(response, "response", tokenDetails);
+
+            // if (!response.ok) {
+            //   throw new Error('Payment creation failed');
+            // }
+
+
+            // const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            // router.push(`/approve/${txId}`);
+        } catch (error) {
+            console.error('Error initiating swap:', error);
+        }
+    };
+
+
+    console.log(paymentData, "paymentData on approve page")
     return (
         <section
             className={`flex-1 p-6 h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
@@ -53,7 +171,7 @@ const page = () => {
 
                     <section className="flex justify-between items-center pb-5 mb-6 max-sm:flex-col max-sm:gap-3 max-sm:items-start">
                         <h2 className="mb-2 text-base font-medium text-sky-950">Amount:</h2>
-                        <p className="text-4xl font-medium text-sky-950">$98.00</p>
+                        <p className="text-4xl font-medium text-sky-950">{`$${paymentData?.amount / 10 ** 6}`}</p>
                     </section>
 
                     <button className="text-[#0096C7] cursor-pointer w-full py-3 bg-[#CAF0F8] bg-opacity-[40%] rounded-[12px] 
@@ -61,7 +179,7 @@ const page = () => {
                     hover:bg-opacity-60 hover:shadow-lg hover:shadow-[#CAF0F8]/20
                     active:transform active:scale-[0.98] active:bg-opacity-70
                     focus:outline-none focus:ring-2 focus:ring-[#0096C7]/20"
-                        onClick={handleNextStep}>
+                        onClick={handleProceed}>das
                         Approve Transaction From Wallet
                     </button>
                 </div>

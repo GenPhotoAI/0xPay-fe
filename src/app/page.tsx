@@ -37,10 +37,14 @@ export default function Home() {
     try {
       // const merchantTokenAddress = merchant?.tokenAddress;// get it form the data of the requestId
       // const merchantTokenDecimals = merchant?.tokenAmount; // get it form the data of the requestId
-      const merchantTokenAddress = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-      const merchantAddress= "5MNEQfHb5MxJhvJv41FD1YSrVTVh1HiWYZWzNhpR4j1"
-      const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=f6afcd4f-5aa6-4a78-9d1a-d64d6720352f");
-      const merchantTokenAmount = "10000"
+      const merchantTokenDetails = await getTokenAddress(symbol); // data user  - merchant.currency
+      const merchantTokenAddress = merchantTokenDetails.address;
+      const userTokenDetails = await getTokenAddress(symbol); // user selected symbol
+      const userTokenAddress = userTokenDetails.address;
+      const userTokenDecimals = userTokenDetails.decimals; //inputTokenDecimals to BE
+      const merchantAddress = '0x' // data user  - merchant.currency
+      const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=f6afcd4f-5aa6-4a78-9d1a-d64d6720352f"); // env me daldo
+      const merchantTokenAmount = "10000" // data user  - data.amount
       const USDC_MINT = new PublicKey(merchantTokenAddress); // Yget from the data of the requestId
       const merchantAccount = new PublicKey(merchantAddress); // get from the data of the requestId - enter the address
 
@@ -55,8 +59,7 @@ export default function Home() {
       console.log("merchantUSDCTokenAccount:", merchantUSDCTokenAccount.toBase58());
 
 
-      const tokenDetails = await getTokenAddress("SOL");
-      const quoteResponse = await getQuote((tokenDetails as any).address as string, merchantTokenAddress, merchantTokenAmount);
+      const quoteResponse = await getQuote(userTokenAddress, merchantTokenAddress, merchantTokenAmount);
 
       console.log(quoteResponse)
 
@@ -91,10 +94,10 @@ export default function Home() {
       const signature = await connection.sendRawTransaction(transactionBinary, {
         maxRetries: 10,
         preflightCommitment: "finalized",
-    });
-      
-    const confirmation = await connection.confirmTransaction( signature , "finalized");
-    console.log(confirmation, "confirmation")
+      });
+
+      const confirmation = await connection.confirmTransaction(signature, "finalized");
+      console.log(confirmation, "confirmation")
       // const response = await createPayment(symbol, tokenDetails.address, tokenDetails.decimals, '98.00');// take this amount from 
 
       // console.log(response, "response", tokenDetails);

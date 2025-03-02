@@ -1,10 +1,13 @@
+import { usePaymentContext } from "@/providers/PaymentContext";
 import { GATEWAY_FEE } from "@/utils/constants";
 import React from "react";
 
 export default function BillPanel() {
+
+    const { paymentData, amount } = usePaymentContext();
+
     const showLabel = true;
     const labelText = 'Amount';
-    const amount = '$98.00';
     const className = '';
 
     return (
@@ -26,32 +29,15 @@ export default function BillPanel() {
                     {showLabel && (
                         <h2 className="mb-2 text-base lg:text-start text-center font-medium text-sky-950">{labelText}</h2>
                     )}
-                    <p className="text-4xl font-medium text-sky-950">{amount}</p>
+                    <p className="text-4xl font-medium text-sky-950">
+                        {`$${paymentData?.amount / 10 ** 6}`}
+                    </p>
                 </section>
 
                 <section className={'mt-6 w-full'}>
-
-                    <div className={`flex justify-between mb-2 ${className}`}>
-                        <p className="text-sm text-sky-950">{'Total Bill'}</p>
-                        <p className="text-sm text-sky-950">{'$96.00'}</p>
-                    </div>
-                    <hr
-                        className={`mx-0 my-2 h-px bg-[#1515151A] ${className}`}
-                    />
-                    <div className={`flex justify-between mb-2 ${className}`}>
-                        <p className="text-sm text-sky-950">{'Subtotal'}</p>
-                        <p className="text-sm text-sky-950">{'$96.00'}</p>
-                    </div>
                     <div className={`flex justify-between mb-2 ${className}`}>
                         <p className="text-sm text-sky-950">{'Gateway Fees'}</p>
-                        <p className="text-sm text-sky-950">{`${GATEWAY_FEE * 100}%`}</p>
-                    </div>
-                    <hr
-                        className={`mx-0 my-2 h-px bg-[#1515151A] ${className}`}
-                    />
-                    <div className={`flex justify-between mb-2 ${className}`}>
-                        <p className="text-sm text-sky-950">{'Total Amount Due'}</p>
-                        <p className="text-sm text-sky-950">{'$98.00'}</p>
+                        <p className="text-sm text-sky-950">{`${GATEWAY_FEE}`}</p>
                     </div>
                 </section>
             </aside>

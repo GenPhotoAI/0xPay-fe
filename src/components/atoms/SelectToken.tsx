@@ -98,6 +98,7 @@ const SelectToken = ({
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 relative">
                                                     <img
+                                                        fetchPriority='high'
                                                         src={token.logoURI}
                                                         alt={token.name}
                                                         className="rounded-full"

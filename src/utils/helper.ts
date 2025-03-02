@@ -42,7 +42,7 @@ export const getQuote = async (inputMint: string, outputMint: string, amount: st
 
 export const getMerchant = async (stripeId: string, token: string) => {
     try {
-        const response = await fetch(`${BACKEND_URL}/merchant/${stripeId}`, {
+        const response = await fetch(`${BACKEND_URL}/merchant/details/${stripeId}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -55,6 +55,71 @@ export const getMerchant = async (stripeId: string, token: string) => {
         console.error('Error fetching merchant:', error);
         return null;
     }
+}
+
+export const createMerchant = async (formData: any, token: string, userId: string) => {
+
+    const formattedFormData = {
+        name: formData.username,
+        address: formData.solAddress,
+        stripeId: userId,
+    }
+    try {
+        const response = await fetch(`${BACKEND_URL}/merchant/create/account`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formattedFormData)
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error creating merchant:', error);
+        return null;
+    }
+}
+
+
+export const createCollection = async (formData: any, token: string, userId: string) => {
+
+
+    const amount = formData.amount * 10 ** 6;
+    const formattedFormData = {
+        stripeId: userId,
+        amount: amount
+    }
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/merchant/create`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formattedFormData)
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error creating collection:', error);
+        return null;
+    }
+
+}
+
+
+export const getCollections = async (token: string, userId: string) => {
+    const response = await fetch(`${BACKEND_URL}/merchant/get/${userId}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    const data = await response.json();
+    return data;
 }
 
 

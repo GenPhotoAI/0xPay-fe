@@ -5,32 +5,49 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import plus from '@/assets/plus.svg'
 import { useRouter } from 'next/navigation'
+import { createCollection, getCollections } from '@/utils/helper'
 
 const page = () => {
+    const { userId, getToken } = useAuth()
+    const { isSignedIn } = useAuth();
+    const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false)
     const [collections, setCollections] = useState([])
     const [formData, setFormData] = useState({
-        amount: '',
-        solAddress: ''
+        amount: ''
     })
 
-    const { isSignedIn } = useAuth();
-    const router = useRouter();
-
     useEffect(() => {
-        if (!isSignedIn) {
-            router.push('/merchant');
+        const fetchCollections = async () => {
+            const token = await getToken();
+            if (!token || !userId) return;
+            const response = await getCollections(token, userId);
+            setCollections(response?.paymentRequests);
         }
-    }, [isSignedIn, router]);
+
+        if (isSignedIn) {
+            fetchCollections();
+        }
+    }, [userId, getToken, isSignedIn]);
 
     if (!isSignedIn) {
-        return null; 
+        return null;
+    }
+
+    console.log('collections', collections);
+
+    // const { stripeId, amount } = req.body;
+    // router.post("/create", async (req, res) => {
+    //     payments / merchant / create
+
+    const handleCreateCollection = async () => {
+        const token = await getToken();
+        if (!token || !userId) return;
+        const response = await createCollection(formData, token, userId);
     }
 
     return (
-
-
         <div className=" w-full p-6 bg-[#CAF0F8]">
             {/* Header Section */}
             <div className="flex justify-between items-center mb-8">
@@ -88,17 +105,6 @@ const page = () => {
                                         onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                                     />
                                 </div>
-                                <div className="flex flex-col gap-3 w-full">
-                                    <span className="text-[16px]">Sol Address</span>
-                                    <input
-                                        type="text"
-                                        placeholder="0xpp45964509o70909548509tty89"
-                                        className="w-full rounded-[30px] bg-white focus:outline-none px-3 text-[14px] border-[0.8px] border-[#E7EAEB] h-[44px]"
-                                        value={formData.solAddress}
-                                        onChange={(e) => setFormData({ ...formData, solAddress: e.target.value })}
-                                    />
-                                </div>
-
                                 <div className="text-[#0AF] px-[10px] py-3 rounded-[12px] bg-[#CAF0F866]">
                                     This is your solana wallet linked to merchant account, funds will be sent directly to this wallet and cannot be recovered by us in case of any loss
                                 </div>
@@ -107,7 +113,7 @@ const page = () => {
                                     <button
                                         className='connect_btn text-white py-3 w-[298px]'
                                         onClick={() => {
-                                            // Handle form submission
+                                            handleCreateCollection();
                                             setIsOpen(false)
                                         }}>
                                         Create
@@ -128,21 +134,15 @@ const page = () => {
                         <tr className='text-[14px] font-normal'>
                             <th className="">Amount</th>
                             <th className="">Date</th>
-                            <th className=""> From</th>
-                            <th className="">Status</th>
                             <th className="">Collection Link</th>
-                            <th className="">Transaction Hash</th>
                         </tr>
                     </thead>
                     <tbody>
                         {collections.map((collection: any) => (
                             <tr key={collection.id}>
-                                <td className="">{collection.amount}</td>
-                                <td className="">{collection.date}</td>
-                                <td className="">{collection.from}</td>
-                                <td className="">{collection.status}</td>
-                                <td className="">{collection.collectionLink}</td>
-                                <td className="">{collection.transactionHash}</td>
+                                <td className="">{`$${collection.amount / 10 ** 6}`}</td>
+                                <td className="">{collection.createdAt}</td>
+                                <td className="">{collection.id}</td>
                             </tr>
                         ))}
                     </tbody>
