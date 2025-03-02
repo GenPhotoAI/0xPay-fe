@@ -310,7 +310,7 @@ const page = () => {
                     </span>}
 
                     {isLoading &&
-                        <div className="flex justify-center w-fit left-0 right-0 mx-auto gap-2 items-center bg-[#DCEEF2] rounded-3xl px-3 py-[9px]">
+                        <div className="flex justify-center w-fit left-0 right-0 mx-auto gap-2 items-center text-black bg-[#DCEEF2] rounded-3xl px-3 py-[9px]">
                             <div className="w-4 h-4 border-2 border-[#0096C7] border-t-transparent rounded-full animate-spin"></div>
                             {currentStep === 1 && <p>Swapping to USDC</p>}
                             {currentStep === 2 && <p>Confirming Transaction</p>}
