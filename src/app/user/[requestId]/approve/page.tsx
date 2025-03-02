@@ -33,9 +33,9 @@ const page = () => {
 
     const userSelectedToken = paymentData?.userSelectedToken;
 
-    // if (!userSelectedToken || !amountToPay) {
-    //     router.push(`/user/${requestId}`);
-    // }
+    if (!userSelectedToken || !amountToPay) {
+        router.push(`/user/${requestId}`);
+    }
 
     const userSelectedTokenName = userSelectedToken?.name;
     const userSelectedTokenSymbol = userSelectedToken?.symbol;
