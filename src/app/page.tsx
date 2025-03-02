@@ -43,7 +43,7 @@ export default function Home() {
       const userTokenAddress = userTokenDetails.address;
       const userTokenDecimals = userTokenDetails.decimals; //inputTokenDecimals to BE
       const merchantAddress = '0x' // data user  - merchant.currency
-      const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=f6afcd4f-5aa6-4a78-9d1a-d64d6720352f"); // env me daldo
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || ''); // env me daldo
       const merchantTokenAmount = "10000" // data user  - data.amount
       const USDC_MINT = new PublicKey(merchantTokenAddress); // Yget from the data of the requestId
       const merchantAccount = new PublicKey(merchantAddress); // get from the data of the requestId - enter the address
