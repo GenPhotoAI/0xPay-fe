@@ -18,7 +18,7 @@ const CollectionList = ({ collections, setIsCollectionLinksModalOpen, isCollecti
                             initial={{ scale: 0.95 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.95 }}
-                            className="py-[20px] px-3 w-[90%] relative max-w-[723px] h-full flex flex-col items-center max-h-[75vh] selectTokenPopup"
+                            className="py-[20px] px-3 w-[90%] relative max-w-[723px] h-full flex flex-col items-center max-h-[75vh] text-black selectTokenPopup"
                         >
                             <button
                                 onClick={() => setIsCollectionLinksModalOpen(false)}

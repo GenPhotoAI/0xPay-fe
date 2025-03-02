@@ -99,7 +99,7 @@ const page = () => {
 
             {/* Header Section */}
             <div className="flex justify-between items-center mb-[38px]">
-                <h1 className="text-2xl font-bold">0xPay</h1>
+                <h1 className="text-2xl text-black font-bold">0xPay</h1>
                 <UserButton afterSignOutUrl="/" />
             </div>
 
@@ -108,7 +108,7 @@ const page = () => {
             <div className="flex gap-3">
                 <button
                     onClick={() => setIsOpen(true)}
-                    className=" create-collection-btn px-4 py-[27px]  w-[367px] h-[172px] 
+                    className=" create-collection-btn px-4 py-[27px] text-black w-[367px] h-[172px] 
                 hover:shadow-lg hover:transform hover:-translate-y-0.5 
                 active:shadow-md active:transform active:translate-y-0 
                 transition-all duration-150
@@ -122,7 +122,7 @@ const page = () => {
                 </button>
                 <button
                     onClick={() => setIsCollectionLinksModalOpen(true)}
-                    className=" create-collection-btn px-4 py-[27px]  w-[367px] h-[172px] 
+                    className=" create-collection-btn px-4 py-[27px] text-black w-[367px] h-[172px] 
                 hover:shadow-lg hover:transform hover:-translate-y-0.5 
                 active:shadow-md active:transform active:translate-y-0 
                 transition-all duration-150
@@ -165,8 +165,8 @@ const page = () => {
                                 <span className="text-2xl">&times;</span>
                             </button>
 
-                            <div className="flex flex-col items-center gap-6 w-full max-w-[602px]">
-                                <h2 className="text-[24px] mb-4">Create New Collection</h2>
+                            <div className="flex flex-col text-black items-center gap-6 w-full max-w-[602px]">
+                                <h2 className="text-[24px] mb-4 text-black">Create New Collection</h2>
                                 <div className="flex flex-col gap-3 w-full">
                                     <span className="text-[16px]">Amount</span>
                                     <input
@@ -200,7 +200,7 @@ const page = () => {
 
             {/* Collections Table */}
 
-            <table className='w-full mt-[111px]'>
+            <table className='w-full mt-[111px] text-black'>
                 <thead>
                     <tr>
                         <th className='border-b py-3 px-4 border-[#15151526]'>Amount</th>
