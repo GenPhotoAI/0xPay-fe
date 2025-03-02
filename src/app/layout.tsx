@@ -2,12 +2,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
-import AppWalletProvider from '@/providers/AppWalletProvider';
-
-import {
-  QueryClientProvider,
-  QueryClient,
-} from "@tanstack/react-query";
 
 
 const dmSans = DM_Sans({
@@ -30,9 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppWalletProvider>
-          {children}
-        </AppWalletProvider>
+        {children}
       </body>
     </html>
   );

@@ -91,7 +91,10 @@ const SelectToken = ({
                                             key={index}
                                             className="flex items-center justify-between px-2 py-4 border-b border-solid border-[#1515151A] hover:bg-gray-50 cursor-pointer transition-colors"
                                             onClick={() => {
-                                                setSelectedToken(token);
+                                                setSelectedToken({
+                                                    ...token,
+                                                    logoURI: token.logoURI
+                                                });
                                                 setIsPopupOpen(false);
                                             }}
                                         >

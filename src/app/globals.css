@@ -102,3 +102,32 @@ body {
     background: #E8FBFF;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
 }
+
+
+.progressCard{
+  border-radius: 19px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.profileTag{
+  border-radius: 12px;
+    border: 1px solid rgba(241, 252, 254, 0.40);
+    background: rgba(255, 255, 255, 0.30);
+    box-shadow: 0px 0px 4px 0px rgba(255, 255, 255, 0.25) inset;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-effect {
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}

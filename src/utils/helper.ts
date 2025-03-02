@@ -123,3 +123,20 @@ export const getCollections = async (token: string, userId: string) => {
 }
 
 
+export const submitPaymentConfirmation = async (paymentId: string, signature: string, userAddress: string, userTokenDecimals: string, inputTokenSymbol: string) => {
+    const response = await fetch(`${BACKEND_URL}/user/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            paymentsRequestId: paymentId,
+            address: userAddress,  // userAddress
+            inputToken: inputTokenSymbol,    // SOL
+            inputTokenDecimals: userTokenDecimals,  // userTokenDecimals
+            transactionHash: signature,
+        })
+    });
+    const data = await response.json();
+    return data;
+}

@@ -7,10 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { allTokens } from "@/utils/tokenLists";
-import { getTokenAddress } from '@/utils/helper';
+import { getQuote, getTokenAddress } from '@/utils/helper';
 import SelectToken from '@/components/atoms/SelectToken';
 import { BACKEND_URL, GATEWAY_FEE } from '@/utils/constants';
 import { usePaymentContext } from '@/providers/PaymentContext';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 interface Token {
     name: string;
@@ -21,7 +22,18 @@ interface Token {
 
 const page = () => {
 
+    const { publicKey } = useWallet();
+
     const { paymentData, amount, setPaymentData } = usePaymentContext();
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const merchantCurrency = paymentData?.merchant?.currency;
+    const userSelectedTokenSymbol = paymentData?.userSelectedToken?.symbol;
+    const amountToPay = paymentData?.amount;
+
+    console.log(paymentData, "paymentDataaaaa")
+
 
     if (!setPaymentData) {
         console.error('setPaymentData is not available in context');
@@ -71,6 +83,52 @@ const page = () => {
         }
     };
 
+    const [quoteAmount, setQuoteAmount] = useState(null);
+    const [quoteDecimals, setQuoteDecimals] = useState(null);
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+
+            if (!merchantCurrency || !userSelectedTokenSymbol) {
+                return;
+            }
+
+            setIsLoading(true);
+
+            try {
+                const merchantTokenDetails = await getTokenAddress(merchantCurrency);
+                const merchantTokenAddress = merchantTokenDetails.address;
+                const userTokenDetails = await getTokenAddress(userSelectedTokenSymbol);
+                const userTokenAddress = userTokenDetails.address;
+                const userTokenDecimals = userTokenDetails.decimals;
+                const merchantTokenAmount = amountToPay
+
+                const quoteResponse = await getQuote(userTokenAddress, merchantTokenAddress, merchantTokenAmount.toString());
+                console.log(quoteResponse.inAmount, quoteResponse, "quoteResponse")
+                setQuoteAmount(quoteResponse.inAmount);
+                setQuoteDecimals(userTokenDecimals);
+            } catch (error) {
+                console.error('Error fetching quote:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [userSelectedTokenSymbol, merchantCurrency, amountToPay, selectedToken]);
+
+
+    const handleTokenSelect = (token: Token) => {
+        setSelectedToken(token);
+        // Update payment data context when token is selected
+        setPaymentData({
+            ...paymentData,
+            userSelectedToken: {
+                name: token.name,
+                symbol: token.symbol,
+                logoURI: token.logoURI
+            }
+        });
+    };
 
     return (
         <section
@@ -96,10 +154,10 @@ const page = () => {
             >
                 <section className="flex justify-between items-center pb-5 mb-6 border-b-2 border-solid border-b-neutral-900 border-b-opacity-10 max-sm:flex-col max-sm:gap-3 max-sm:items-start">
                     <h2 className="mb-2 text-base font-medium text-sky-950">Amount:</h2>
-                    <p className="text-4xl font-medium text-sky-950">{`$${paymentData?.amount / 10 ** 6}`}</p>
+                    <p className="text-4xl font-medium text-sky-950">{`${paymentData?.amount / 10 ** 6} ${merchantCurrency}`}</p>
                 </section>
 
-                <div className={`mb-8`}>
+                <div className={`my-4`}>
                     <h3 className="mb-3 text-base font-medium text-slate-900">Pay With:</h3>
                     <button
                         onClick={() => setIsPopupOpen(true)}
@@ -146,11 +204,24 @@ const page = () => {
                         setIsPopupOpen={setIsPopupOpen}
                         tokens={tokens}
                         selectedToken={selectedToken}
-                        setSelectedToken={setSelectedToken}
+                        setSelectedToken={handleTokenSelect}
                     />
 
                 </div>
-                <section className={`mb-8 `}>
+
+                {selectedToken && (
+                    (!quoteAmount && !quoteDecimals) ? (
+                        <div className="h-5 w-64 bg-gradient-to-r from-gray-200 via-white to-gray-200 shimmer-effect rounded"></div>
+                    ) : (
+                        quoteAmount && quoteDecimals && (
+                            <span className="text-sm text-sky-950">
+                                {`${quoteAmount / 10 ** quoteDecimals} ${userSelectedTokenSymbol} = ${paymentData?.amount / 10 ** 6} USDC`}
+                            </span>
+                        )
+                    )
+                )}
+
+                <section className={`mb-8 mt-4`}>
                     <h3 className="mb-3 text-base font-medium text-slate-900">
                         Fees Calculation
                     </h3>
@@ -161,7 +232,7 @@ const page = () => {
                     </div>
                 </section>
 
-                {selectedToken &&
+                {selectedToken && publicKey &&
                     <div className="flex w-full justify-center">
                         <button onClick={handleProceed} type="button"
                             className={`connect_btn cursor-pointer px-6 py-3 font-medium text-[16px] w-[338px]`}
