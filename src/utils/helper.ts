@@ -140,3 +140,16 @@ export const submitPaymentConfirmation = async (paymentId: string, signature: st
     const data = await response.json();
     return data;
 }
+
+
+export const getPaymentsSoFar = async (token: string, userId: string) => {
+    const response = await fetch(`${BACKEND_URL}/merchant/status/${userId}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    const data = await response.json();
+    return data;
+}

@@ -25,9 +25,9 @@ const Page = () => {
         const token = await getToken();
         console.log('token', token);
         if (userId && token) {
-            const merchant = await getMerchant(userId, token);
-            console.log('merchanttt', merchant);
-            if (merchant.name && merchant.address) {
+            const merchantRes = await getMerchant(userId, token);
+            console.log('merchanttt', merchantRes);
+            if (merchantRes.merchant.name && merchantRes.merchant.address) {
                 router.push('/merchant/dashboard');
             } else {
                 setShowMerchantForm(true);

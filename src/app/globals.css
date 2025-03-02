@@ -25,7 +25,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans);
 }
 
 .connect_btn {
@@ -56,8 +56,8 @@ body {
 
 .createCollectionPopup {
   border-radius: 24px;
-    border: 1px solid rgba(3, 212, 255, 0.12);
-    background: #E8FBFF;
+  border: 1px solid rgba(3, 212, 255, 0.12);
+  background: #E8FBFF;
 }
 
 .searchTokenInput {
@@ -96,25 +96,25 @@ body {
   background: rgba(235, 235, 235, 0.76);
 }
 
-.create-collection-btn{
+.create-collection-btn {
   border-radius: 24px;
-    border: 1px solid rgba(3, 212, 255, 0.12);
-    background: #E8FBFF;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(3, 212, 255, 0.12);
+  background: #E8FBFF;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
 }
 
 
-.progressCard{
+.progressCard {
   border-radius: 19px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.profileTag{
+.profileTag {
   border-radius: 12px;
-    border: 1px solid rgba(241, 252, 254, 0.40);
-    background: rgba(255, 255, 255, 0.30);
-    box-shadow: 0px 0px 4px 0px rgba(255, 255, 255, 0.25) inset;
+  border: 1px solid rgba(241, 252, 254, 0.40);
+  background: rgba(255, 255, 255, 0.30);
+  box-shadow: 0px 0px 4px 0px rgba(255, 255, 255, 0.25) inset;
 }
 
 @keyframes shimmer {
