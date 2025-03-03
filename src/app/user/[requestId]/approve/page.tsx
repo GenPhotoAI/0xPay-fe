@@ -16,6 +16,7 @@ import Image from 'next/image';
 import Sol from '@/assets/Sol.svg';
 import Success from '@/assets/Success.svg';
 import { QRCodeSVG } from 'qrcode.react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const page = () => {
 
@@ -56,6 +57,11 @@ const page = () => {
     const [quoteAmount, setQuoteAmount] = useState(null);
     const [quoteDecimals, setQuoteDecimals] = useState(null);
 
+    const [transactionSignature, setTransactionSignature] = useState('');
+
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
     useEffect(() => {
         setCurrentStep(0);
     }, []);
@@ -92,12 +98,14 @@ const page = () => {
     }, [userSelectedTokenSymbol, merchantCurrency, amountToPay]);
 
     const handleProceed = async () => {
-
         if (!merchantCurrency || !userSelectedTokenSymbol) {
             return;
         }
 
         setIsLoading(true);
+        setIsError(false);
+        setErrorMessage('');
+
         try {
             // const merchantTokenAddress = merchant?.tokenAddress;// get it form the data of the requestId
             // const merchantTokenDecimals = merchant?.tokenAmount; // get it form the data of the requestId
@@ -161,33 +169,46 @@ const page = () => {
                 preflightCommitment: "finalized",
             });
 
+            if (!signature) {
+                throw new Error('Transaction failed - no signature received');
+            }
+
             const confirmation = await connection.confirmTransaction(signature, "finalized");
+
             console.log(confirmation, "confirmation", signature)
 
+            if (!confirmation?.value?.err) {
 
-            const response = await submitPaymentConfirmation(
-                requestIdString || '',
-                signature,
-                publicKey?.toString() || '',
-                userTokenDecimals,
-                userSelectedTokenSymbol
-            )
+                setTransactionSignature(signature);
+                // Transaction is successful on-chain
+                setIsSuccess(true);
+                handleNextStep();
 
-            console.log(response, "response")
+                // Try to submit payment confirmation, but don't fail if it errors
+                try {
+                    const response = await submitPaymentConfirmation(
+                        requestIdString || '',
+                        signature,
+                        publicKey?.toString() || '',
+                        userTokenDecimals,
+                        userSelectedTokenSymbol
+                    );
 
-            setIsSuccess(true);
+                    if (!response) {
+                        toast.error('Payment confirmation failed, but transaction was successful');
+                    }
+                } catch (endpointError) {
+                    console.error('Error submitting payment confirmation:', endpointError);
+                    toast.error('Payment confirmation failed, but transaction was successful');
+                }
+            } else {
+                throw new Error('Transaction failed to confirm on-chain');
+            }
 
-            handleNextStep();
-
-            // if (!response.ok) {
-            //   throw new Error('Payment creation failed');
-            // }
-
-
-            // const txId = `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            // router.push(`/approve/${txId}`);
         } catch (error) {
             console.error('Error initiating swap:', error);
+            setIsError(true);
+            setErrorMessage(error instanceof Error ? error.message : 'Transaction failed');
         } finally {
             setIsLoading(false);
         }
@@ -201,6 +222,7 @@ const page = () => {
         <section
             className={`flex-1 p-6 h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
         >
+            <Toaster />
             <header className={`flex justify-between items-center mb-10 `}>
                 <h1 className="text-2xl tracking-tighter text-sky-950">0xPay.</h1>
                 {/* <CustomConnect /> */}
@@ -358,9 +380,22 @@ const page = () => {
                     <div className="flex flex-col gap-[38px] items-center justify-center text-center">
                         <Image src={Success} alt="USDC" width={132} height={132} />
                         <p className="text-2xl font-medium text-sky-950">Transaction Completed!</p>
+                        <a href={`https://solscan.io/tx/${transactionSignature}`} target="_blank" rel="noopener noreferrer" className="text-base cursor-pointer underline text-sky-950">View on Solscan</a>
                         <p className="text-base text-sky-950">Your payment has been confirmed. Thank you for using 0xPay.</p>
                     </div>
                 }
+
+                {isError && (
+                    <div className="flex flex-col gap-[38px] items-center justify-center text-center">
+                        <div className="w-[132px] h-[132px] rounded-full bg-red-100 flex items-center justify-center">
+                            <svg className="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <p className="text-2xl font-medium text-red-600">Transaction Failed!</p>
+                        <p className="text-base text-red-600">{errorMessage}</p>
+                    </div>
+                )}
 
             </main>
         </section>
