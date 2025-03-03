@@ -31,15 +31,15 @@ const CollectionList = ({ collections, setIsCollectionLinksModalOpen, isCollecti
                                 <table className="min-w-full border-collapse">
                                     <thead>
                                         <tr className='text-[14px] font-normal'>
-                                            <th className="w-1/2 text-left py-4 border-b border-[#15151526]">Amount</th>
-                                            <th className="w-1/2 text-left py-4 border-b border-[#15151526]">Collection Link</th>
+                                            <th className="w-[150px] whitespace-nowrap text-left py-4 border-b border-[#15151526]">Amount</th>
+                                            <th className="w-full pl-4 text-left py-4 border-b border-[#15151526]">Collection Link</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {collections?.map((collection: any) => (
                                             <tr key={`${collection.id}-${Math.random()}`}>
-                                                <td className="w-1/2 py-4 border-b border-[#15151526]">{`${collection.amount / 10 ** 6} USDC`}</td>
-                                                <td className="w-1/2 py-4 border-b border-[#15151526]">
+                                                <td className="w-[250px] whitespace-nowrap py-4 border-b border-[#15151526]">{`${collection.amount / 10 ** 6} USDC`}</td>
+                                                <td className="w-full pl-4 py-4 border-b border-[#15151526]">
                                                     <div className="flex items-center gap-2">
                                                         <span className='text-[#023047] truncate max-w-[300px]'>{`${process.env.NEXT_PUBLIC_APP_URL}/user/${collection.id}`}</span>
                                                         <button

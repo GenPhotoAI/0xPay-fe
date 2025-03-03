@@ -205,7 +205,7 @@ const page = () => {
 
             {/* Collections Table */}
 
-            <table className='w-full mt-[111px] text-black'>
+            {paymentsSoFar && paymentsSoFar.length > 0 ? (<table className='w-full mt-[111px] text-black'>
                 <thead>
                     <tr>
                         <th className='border-b py-3 px-4 border-[#15151526]'>Amount</th>
@@ -312,7 +312,11 @@ const page = () => {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table>) : (
+                <div className='flex justify-center items-center h-full mt-[111px] text-black'>
+                    <h2 className='text-2xl text-black'>No payments so far...</h2>
+                </div>
+            )}
 
         </div>
     )
