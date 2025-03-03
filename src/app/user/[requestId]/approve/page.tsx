@@ -41,7 +41,8 @@ const page = () => {
 
     const userSelectedTokenName = userSelectedToken?.name;
     const userSelectedTokenSymbol = userSelectedToken?.symbol;
-    const userSelectedTokenLogoURI = userSelectedToken?.logoURI;
+
+    const userSelectedTokenLogoURI = paymentData?.userSelectedToken?.logoURI;
 
     const { publicKey, wallet, signTransaction } = useWallet();
 
@@ -218,6 +219,7 @@ const page = () => {
     console.log(currentStep, "currentStep")
 
     console.log(paymentData, "paymentData on approve page")
+
     return (
         <section
             className={`flex-1 p-6 h-full bg-cyan-50 rounded-3xl border border-solid border-cyan-400 border-opacity-10 max-md:mb-6 `}
@@ -264,7 +266,7 @@ const page = () => {
                                     transition={{ duration: 0.5 }}
                                 />
                             </div>
-                            <Image src={Sol} alt="USDC" width={48} height={48} className="relative z-10" />
+                            <Image src={userSelectedTokenLogoURI || Sol} alt="USDC" width={48} height={48} className="relative z-10 rounded-full" />
                         </div>
                         <div className="flex-1 h-[2px] bg-[#1ac1e337] bg-opacity-20 rounded-[17px] overflow-hidden">
                             <motion.div
