@@ -47,16 +47,16 @@ const page = () => {
     }, [userId, getToken]);
 
 
+    const fetchCollections = async () => {
+        const token = await getToken();
+        if (!token || !userId) return;
+        const response = await getCollections(token, userId);
+        setCollections(response?.paymentRequests);
+
+        console.log('response of collections', response);
+    }
+
     useEffect(() => {
-        const fetchCollections = async () => {
-            const token = await getToken();
-            if (!token || !userId) return;
-            const response = await getCollections(token, userId);
-            setCollections(response?.paymentRequests);
-
-            console.log('response of collections', response);
-        }
-
         if (isSignedIn) {
             fetchCollections();
         }
@@ -80,6 +80,7 @@ const page = () => {
 
             if (response?.message === 'success') {
                 toast.success('Collection created successfully', { id: loadingToast });
+                await fetchCollections();
             } else {
                 toast.error('Failed to create collection', { id: loadingToast });
             }
@@ -89,6 +90,10 @@ const page = () => {
         } finally {
             setIsOpen(false)
         }
+    }
+
+    const handleOpenCollectionLinks = async () => {
+        setIsCollectionLinksModalOpen(true);
     }
 
 
@@ -121,7 +126,7 @@ const page = () => {
                     </div>
                 </button>
                 <button
-                    onClick={() => setIsCollectionLinksModalOpen(true)}
+                    onClick={handleOpenCollectionLinks}
                     className=" create-collection-btn px-4 py-[27px] text-black w-[367px] h-[172px] 
                 hover:shadow-lg hover:transform hover:-translate-y-0.5 
                 active:shadow-md active:transform active:translate-y-0 
