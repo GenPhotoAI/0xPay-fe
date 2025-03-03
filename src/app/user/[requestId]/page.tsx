@@ -228,7 +228,7 @@ const page = () => {
                     <hr className="mb-3 h-0.5 bg-neutral-900 bg-opacity-10" />
                     <div className={`flex justify-between mb-1`}>
                         <p className="text-sm font-medium text-slate-900">{'Gateway Fees'}</p>
-                        <p className="text-sm text-slate-900">{`$${GATEWAY_FEE}`}</p>
+                        <p className="text-sm text-slate-900">{`${GATEWAY_FEE} ${merchantCurrency}`}</p>
                     </div>
                 </section>
 
