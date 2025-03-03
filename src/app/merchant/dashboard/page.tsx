@@ -219,7 +219,7 @@ const page = () => {
                 <tbody>
                     {paymentsSoFar?.map((payment) => (
                         <tr key={payment.id} className='py-3 px-4'>
-                            <td className='py-3 px-4 border-b border-[#15151526]'>{payment.amount}</td>
+                            <td className='py-3 px-4 border-b border-[#15151526]'>{`${payment.paymentRequest.amount / 10 ** 6} USDC`}</td>
                             <td className='py-3 px-4 border-b border-[#15151526]'>{new Date(payment.createdAt).toLocaleDateString('en-GB')}</td>
                             <td className='py-3 px-4 border-b border-[#15151526]'>
                                 <div className="flex items-center gap-2">
